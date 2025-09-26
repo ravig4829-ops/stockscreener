@@ -1,26 +1,29 @@
 # ---- build stage ----
-FROM maven:3.9.4-eclipse-temurin-17 as build
+FROM maven:3.9.4-openjdk-17-slim AS build
+
 WORKDIR /app
 
-# copy maven files first for layer caching
-COPY pom.xml mvnw ./
-COPY .mvn .mvn
-RUN mvn -B -f pom.xml -q dependency:go-offline
+# सिर्फ pom.xml कॉपी करके डिपेंडेंसीज़ डाउनलोड करवाएँ
+COPY pom.xml .
 
-# copy source and build
+# src फोल्डर कॉपी करें
 COPY src ./src
-RUN mvn -B -f pom.xml -q package -DskipTests
 
-# ---- run stage ----
-FROM eclipse-temurin:17-jre
-WORKDIR /app
+# पैकेजिंग (टेस्ट स्किप करके)
+RUN mvn clean package -DskipTests
 
-# copy jar from build stage (adjust name if your jar has different name)
-COPY --from=build /app/target/*.jar app.jar
+############################
+# 2) रन टाइम स्टेज (JDK24)
+############################
+# Alpine बेस पर Temurin 24 JDK यूज़ करें
+FROM eclipse-temurin:17-jdk-alpine
 
-# expose (not strictly required but useful)
-EXPOSE 10000
+# बिल्ड स्टेज से JAR कॉपी करें
+ARG JAR_FILE=/app/target/*.jar
+COPY --from=build ${JAR_FILE} /app/app.jar
 
-# Run with PORT environment variable (Render sets PORT; default expected port is 10000)
-# we pass server.port from env so Spring binds to the correct port
-ENTRYPOINT ["sh", "-c", "java -Dserver.port=${PORT:-10000} -Dserver.address=0.0.0.0 -jar /app/app.jar"]
+# पोर्ट अगर एक्सपोज करना हो तो
+EXPOSE 8080
+
+# कंटेनर स्टार्ट कमांड
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
