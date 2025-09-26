@@ -3,12 +3,7 @@
 ############################
 FROM gradle:8.4.0-jdk21-alpine AS build
 
-# Build-time arg: set this from Render build env (or docker build --build-arg ...)
-ARG SPRING_REDIS_URL
-# Make it available as env var during build so Gradle tests can read it
-ENV SPRING_REDIS_URL=${SPRING_REDIS_URL}
-
-# Working directory
+# Set the working directory
 WORKDIR /app
 
 # Copy the build configuration files and Gradle wrapper
@@ -19,18 +14,14 @@ COPY gradle /app/gradle
 # Grant execute permissions to the Gradle wrapper script
 RUN chmod +x ./gradlew
 
-# Download dependencies (warm cache)
+# Download dependencies
 RUN ./gradlew dependencies --no-daemon
 
-# Copy source
+# Copy the application source code
 COPY src /app/src
 
-# Run the build with verbose output and show test reports on failure (temporary debug-friendly)
-# Note: This will print stacktraces and tail xml test reports to build logs if tests fail.
-RUN ./gradlew build --no-daemon --stacktrace --info --warning-mode all || ( \
-    echo "==== BUILD FAILED: printing test artifacts (if any) ====" && \
-    if [ -d build/test-results/test ]; then ls -la build/test-results/test || true; for f in build/test-results/test/*.xml; do echo "==== $f ===="; tail -n 200 $f || true; done; fi; \
-    echo "==== END OF TEST REPORTS ===="; false )
+# Run the build, creating the fat JAR file
+RUN ./gradlew build --no-daemon -x test
 
 ############################
 # 2) Run-time stage
@@ -40,14 +31,14 @@ FROM eclipse-temurin:21-jre-alpine
 # Set the working directory
 WORKDIR /app
 
-# Copy the packaged JAR file from the build stage (wildcard)
+# Copy the packaged JAR file from the build stage
 ARG JAR_FILE=/app/build/libs/*.jar
 COPY --from=build ${JAR_FILE} /app/app.jar
 
-# Expose port
+# Expose the application's port
 EXPOSE 8080
 
-# Recommended: pass runtime SPRING_REDIS_URL via environment in your platform (Render)
-# ENTRYPOINT
+# Command to run the application
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+
 
