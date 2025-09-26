@@ -1,28 +1,41 @@
-# ---- build stage ----
-FROM maven:3.9.4-eclipse-temurin-17 AS build
+# Start with a Gradle image as the build stage
+FROM gradle:8.4.0-jdk17-alpine AS build
 
+# Set the working directory
 WORKDIR /app
 
+# Copy the build configuration files first to leverage caching
+# This assumes your project has a settings.gradle and build.gradle at the root
+COPY build.gradle settings.gradle /app/
 
+# Copy the Gradle wrapper files (important for consistent builds)
+COPY gradlew /app/gradlew
+COPY gradle /app/gradle
 
-# src फोल्डर कॉपी करें
-COPY src ./src
+# Download dependencies
+# The --no-daemon flag prevents the Gradle daemon from running, which is ideal for CI/CD environments
+RUN ./gradlew dependencies --no-daemon
+# Copy the source code
+COPY src /app/src
 
-# पैकेजिंग (टेस्ट स्किप करके)
-RUN mvn clean package -DskipTests
+# Run the build, creating the fat JAR file
+RUN ./gradlew build --no-daemon
 
 ############################
-# 2) रन टाइम स्टेज (JDK24)
+# 2) Run-time stage
 ############################
-# Alpine बेस पर Temurin 24 JDK यूज़ करें
-FROM eclipse-temurin:17-jdk-alpine
+# Use a lightweight JRE base image for the final image
+FROM eclipse-temurin:17-jre-alpine
 
-# बिल्ड स्टेज से JAR कॉपी करें
-ARG JAR_FILE=/app/target/*.jar
+# Set the working directory
+WORKDIR /app
+# Copy the packaged JAR file from the build stage
+# Gradle places the JAR in `build/libs/` by default
+ARG JAR_FILE=/app/build/libs/*.jar
 COPY --from=build ${JAR_FILE} /app/app.jar
 
-# पोर्ट अगर एक्सपोज करना हो तो
+# Expose the application's port
 EXPOSE 8080
 
-# कंटेनर स्टार्ट कमांड
+# Command to run the application
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
