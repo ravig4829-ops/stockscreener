@@ -532,7 +532,7 @@ public class UpstoxWebSocketService {
     // start / stop / status
     // -----------------------
     public Mono<String> startWebSocket() {
-        marketMorningScheduler.runDailyMorningCheck();
+        //marketMorningScheduler.runDailyMorningCheck();
         // idempotent start
         if (!started.compareAndSet(false, true)) {
             return Mono.just("ALREADY_STARTED");
