@@ -195,27 +195,7 @@ public class RedisConfig {
 
 
 
-    @Bean
-    @ConditionalOnProperty(name = "app.redis.enabled", havingValue = "true", matchIfMissing = true)
-    public ReactiveRedisMessageListenerContainer reactiveRedisMessageListenerContainer(LettuceConnectionFactory lettuceConnectionFactory) {
-        // do a lightweight check first
-        try {
-            // ensure reactive connection available (may throw)
-            ((ReactiveRedisConnectionFactory) lettuceConnectionFactory).getReactiveConnection(); // quick availability check
-            ReactiveRedisMessageListenerContainer container = new ReactiveRedisMessageListenerContainer(lettuceConnectionFactory);
-            log.info("ReactiveRedisMessageListenerContainer created");
-            return container;
-        } catch (Exception ex) {
-            // If Redis is unavailable at the moment, skip creating the container to avoid hard failure.
-            // IMPORTANT: If your app logic requires this container at runtime, enable Redis on Render
-            // and set SPRING_REDIS_HOST/PORT so that this bean can be created successfully.
-            log.warn("Redis appears unavailable; skipping reactive listener container creation: {}", ex.toString());
-            // Return a minimal no-op implementation of the interface to satisfy autowires if any.
-            return new ReactiveRedisMessageListenerContainer(new LettuceConnectionFactory(new RedisStandaloneConfiguration("127.0.0.1", 6379)));
-            // Note: the returned dummy factory won't be functional; it's just to avoid bean-missing errors
-            // during build. In production enable real Redis and rebuild without app.redis.enabled=false.
-        }
-    }
+ 
 
 
 
@@ -260,3 +240,4 @@ public class RedisConfig {
 
 
 }
+
