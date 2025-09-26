@@ -16,4 +16,4 @@ services:
     depends_on:
       - redis
     environment:
-      - SPRING_DATA_REDIS_HOST=redis
+          REDIS_URL: redis://redis:6379
