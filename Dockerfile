@@ -39,6 +39,5 @@ COPY --from=build ${JAR_FILE} /app/app.jar
 EXPOSE 8080
 
 # Command to run the application
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
-
+ENTRYPOINT ["java","-jar","/app/app.jar", "--server.address=0.0.0.0", "--server.port=$PORT"]
 
