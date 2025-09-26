@@ -1,7 +1,7 @@
 ############################
 # 1) Build stage
 ############################
-FROM gradle:8.4.0-jdk17-alpine AS build
+FROM gradle:8.4.0-jdk21-alpine AS build
 
 # Set the working directory
 WORKDIR /app
@@ -26,7 +26,7 @@ RUN ./gradlew build --no-daemon
 ############################
 # 2) Run-time stage
 ############################
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:21-jre-alpine
 
 # Set the working directory
 WORKDIR /app
@@ -40,4 +40,3 @@ EXPOSE 8080
 
 # Command to run the application
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
-
