@@ -4,7 +4,7 @@ FROM maven:3.9.4-eclipse-temurin-17 AS build
 WORKDIR /app
 
 # सिर्फ pom.xml कॉपी करके डिपेंडेंसीज़ डाउनलोड करवाएँ
-COPY pom.xml .
+COPY build.gradle .
 
 # src फोल्डर कॉपी करें
 COPY src ./src
