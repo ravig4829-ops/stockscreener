@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="hi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+    <title>Login Successful</title>
+
+    <!-- Materialize CSS (CDN) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"/>
+
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <style>
+        /* हल्का custom theme */
+        body { background: linear-gradient(180deg,#f7fbff, #eef6ff); min-height:100vh; }
+        .card-panel.custom { border-radius: 12px; box-shadow: 0 8px 20px rgba(50,60,80,0.08); }
+        .brand { color:#1565c0; font-weight:600; letter-spacing:0.2px; }
+        .big-icon { font-size:72px; color:#2e7d32; }
+        .muted { color:#6b7280; }
+        .actions { margin-top:18px; }
+        footer.page-footer { background: transparent; box-shadow: none; padding-top: 0; }
+    </style>
+</head>
+<body>
+<div class="container" style="padding-top:6vh;">
+    <div class="row">
+        <div class="col s12 m8 offset-m2 l6 offset-l3">
+            <div class="card-panel custom center-align">
+                <i class="material-icons big-icon">check_circle</i>
+                <h5 class="brand">लॉगिन सफल</h5>
+                <p class="muted" th:text="${message}">टोकन कैश कर दिया गया है।</p>
+
+                <div class="row actions">
+                    <div class="col s12 m6">
+                        <a class="waves-effect waves-light btn-large" th:href="@{/}" ><i class="material-icons left">home</i>होम</a>
+                    </div>
+                    <div class="col s12 m6">
+                        <a class="waves-effect waves-light btn-flat" th:href="@{/status}"><i class="material-icons left">network_check</i>सर्विस स्थिति</a>
+                    </div>
+                </div>
+
+                <div style="margin-top:12px" class="muted">
+                    <small>यदि websocket अब स्टार्ट नहीं हुआ है तो आप <a th:href="@{/start}">स्टार्ट</a> कर सकते हैं।</small>
+                </div>
+            </div>
+
+            <div class="center" style="margin-top:10px;">
+                <small class="muted">© Your App</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Materialize JS (initialization) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script>
+    // कोई JS जरूरत हो तो यहाँ रखें (अभी autoInit नहीं चाहिए)
+</script>
+</body>
+</html>

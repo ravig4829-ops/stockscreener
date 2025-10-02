@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="hi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+    <title>Authentication Error</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <style>
+        body { background: #fff7f7; min-height:100vh; }
+        .card-panel.custom { border-radius: 12px; box-shadow: 0 6px 18px rgba(150,40,40,0.06); }
+        .err-icon { font-size:64px; color:#c62828; }
+        .muted { color:#6b7280; }
+    </style>
+</head>
+<body>
+<div class="container" style="padding-top:6vh;">
+    <div class="row">
+        <div class="col s12 m8 offset-m2 l6 offset-l3">
+            <div class="card-panel custom center-align">
+                <i class="material-icons err-icon">error_outline</i>
+                <h5>ऑथेन्टिकेशन में त्रुटि</h5>
+                <p class="muted" th:text="${error}">कुछ गलत हुआ — कृपया पुनः प्रयास करें।</p>
+
+                <div style="margin-top:18px;">
+                    <a class="waves-effect waves-light btn" th:href="@{/auth/start}"><i class="material-icons left">refresh</i>पुनः प्रयास करें</a>
+                    <a class="waves-effect btn-flat" th:href="@{/}">होम</a>
+                </div>
+            </div>
+
+            <div class="center" style="margin-top:10px;">
+                <small class="muted">यदि समस्या बनी रहे तो लॉग चेक करें।</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</body>
+</html>
